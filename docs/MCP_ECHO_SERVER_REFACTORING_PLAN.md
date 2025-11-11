@@ -371,9 +371,42 @@ curl -X POST http://localhost:3001/ \
      - GET requests used for session message polling (different from stateless)
      - Session lifecycle managed through SessionManager
 
+### Stateful Server - Ready to Complete
+
+**Preparation Complete**:
+1. ✅ Dependencies updated (`mcp-echo-base` added to pyproject.toml)
+2. ✅ Original backed up (`server_original_backup.py`)
+3. ✅ Detailed implementation guide created (`REFACTORING_NEXT_STEPS.md`)
+4. ✅ Pattern proven with stateless (20.3% reduction achieved)
+
+**Implementation Ready**:
+- All steps documented in `mcp-echo-streamablehttp-server-stateful/REFACTORING_NEXT_STEPS.md`
+- Expected reduction: ~250-270 lines (17-19%)
+- Key differences from stateless documented
+- Testing steps provided
+
 ### Next Steps
 
-1. Apply same refactoring pattern to stateful server
-2. Install dependencies in proper environment (`pip install -e .`)
-3. Run integration tests (Phase 3)
-4. Deploy (Phase 4)
+1. **Complete Stateful Refactoring** (Follow REFACTORING_NEXT_STEPS.md)
+   - Estimated time: 1-2 hours
+   - Expected result: ~250-270 line reduction
+   - Total project savings: ~500-530 lines
+
+2. **Install Dependencies** in proper environment
+   ```bash
+   cd mcp-echo-base && pip install -e .
+   cd ../mcp-echo-streamablehttp-server-stateless && pip install -e .
+   cd ../mcp-echo-streamablehttp-server-stateful && pip install -e .
+   ```
+
+3. **Run Integration Tests** (Phase 3)
+   - Test stateless server functionality
+   - Test stateful server with session management
+   - Test all 9+ diagnostic tools
+   - Regression testing
+
+4. **Deploy** (Phase 4)
+   - Stateless first (lower risk)
+   - Monitor 24 hours
+   - Stateful second
+   - Monitor 24 hours
