@@ -338,15 +338,38 @@ curl -X POST http://localhost:3001/ \
    - Import cleaned: Removed `sys.path` manipulation
    - Syntax validated: ✓ Passes `py_compile`
 
-3. ⏳ **Stateful Server** (Phase 2 - Step 3) - PENDING
-   - Pattern established with stateless refactoring
-   - Key additions needed:
-     - `get_additional_headers()` → `{"mcp-session-id": "mcp-session-id"}`
-     - `get_additional_request_data()` → `{"session_id": traefik_headers.get("mcp-session-id")}`
-     - `_log_request()` → Include session ID in logging
-     - `handle_initialize()` → Session creation/management
-     - Keep `SessionManager` class (not duplicated, unique to stateful)
-   - Expected reduction: ~200-220 lines (similar to stateless)
+3. ⏳ **Stateful Server** (Phase 2 - Step 3) - READY TO IMPLEMENT
+   - Pattern established with stateless refactoring (20.3% reduction achieved)
+   - Stateful server analysis:
+     - Original: 1,415 lines
+     - SessionManager class: 102 lines (unique to stateful, keep as-is)
+     - Expected duplicate code: ~250-270 lines (similar to stateless)
+     - Expected refactored size: ~1,145-1,165 lines
+     - **Expected reduction: ~250-270 lines (17-19%)**
+
+   - Implementation steps:
+     1. Import `MCPEchoServerBase`
+     2. Inherit from base class
+     3. Keep `SessionManager` class (lines 39-141)
+     4. Implement abstract methods with session awareness:
+        - `get_server_type()` → "stateful"
+        - `get_supported_versions()` → ["2025-06-18"]
+        - `get_additional_headers()` → `{"mcp-session-id": "mcp-session-id"}`
+        - `get_additional_request_data()` → `{"session_id": traefik_headers.get("mcp-session-id", "none")}`
+        - `_log_request()` → Include session ID
+        - `handle_initialize()` → Session creation/management (returns tuple)
+     5. Keep session-specific methods:
+        - `_handle_get_request()` - polls session messages
+        - Session-aware tool handlers
+     6. Update `_handle_jsonrpc_request()` signature (returns tuple)
+     7. Add dependency to pyproject.toml
+     8. Backup and replace
+
+   - Complexity notes:
+     - Stateful has additional session management logic not present in stateless
+     - Methods return tuples (response, session_id) instead of just response
+     - GET requests used for session message polling (different from stateless)
+     - Session lifecycle managed through SessionManager
 
 ### Next Steps
 
