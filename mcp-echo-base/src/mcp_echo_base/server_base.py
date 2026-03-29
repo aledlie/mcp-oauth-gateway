@@ -22,6 +22,7 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Route
 
 logger = logging.getLogger(__name__)
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 _request_context_var: ContextVar[dict | None] = ContextVar("request_context", default=None)
 _request_timing_var: ContextVar[dict | None] = ContextVar("request_timing", default=None)
@@ -52,14 +53,6 @@ class MCPEchoServerBase(ABC):
         """
         self.debug = debug
         self.supported_versions = supported_versions or self.get_supported_versions()
-
-        # Setup logging
-        log_level = logging.DEBUG if debug else logging.INFO
-        logging.basicConfig(
-            level=log_level,
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            handlers=[logging.StreamHandler(sys.stdout)],
-        )
 
         # Create Starlette application
         self.app = Starlette(
@@ -197,6 +190,14 @@ class MCPEchoServerBase(ABC):
             port: Port to bind to
             log_file: Optional path to log file
         """
+        # Configure logging here (run() is the application entry point, not library __init__)
+        log_level = logging.DEBUG if self.debug else logging.INFO
+        logging.basicConfig(
+            level=log_level,
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            handlers=[logging.StreamHandler(sys.stdout)],
+        )
+
         if log_file:
             log_file_path = Path(log_file)
             log_file_path.parent.mkdir(parents=True, exist_ok=True)
