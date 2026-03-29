@@ -384,18 +384,27 @@ logs-clean-force:
 
 # Project-specific commands
 
-# Generate JWT secret and save to Doppler
+# Generate JWT secret and save to Doppler, falling back to .env
 generate-jwt-secret:
     #!/usr/bin/env bash
     NEW_JWT_SECRET=$(python -c "import secrets; print(secrets.token_urlsafe(32))")
 
-    # Update Doppler if available
+    # Update Doppler if available, otherwise fall back to .env
     if command -v doppler &>/dev/null; then
         echo "${NEW_JWT_SECRET}" | doppler secrets set GATEWAY_JWT_SECRET --project integrity-studio --config dev
         echo "✅ Updated GATEWAY_JWT_SECRET in Doppler (integrity-studio/dev)"
         echo "🔥 SACRED JWT SECRET HAS BEEN BLESSED"
     else
-        echo "⚠️  doppler CLI not found — skipping Doppler update"
+        echo "⚠️  doppler CLI not found — falling back to .env"
+        if [ ! -f .env ]; then
+            touch .env
+        fi
+        if grep -q "^GATEWAY_JWT_SECRET=" .env; then
+            sed -i.bak "s|^GATEWAY_JWT_SECRET=.*|GATEWAY_JWT_SECRET=${NEW_JWT_SECRET}|" .env && rm -f .env.bak
+        else
+            echo "GATEWAY_JWT_SECRET=${NEW_JWT_SECRET}" >> .env
+        fi
+        echo "✅ Updated GATEWAY_JWT_SECRET in .env"
     fi
 
 # Generate RSA keys for RS256 JWT signing and save to .env
