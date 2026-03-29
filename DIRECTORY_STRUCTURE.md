@@ -11,13 +11,13 @@ This is a **monorepo** that uses **Git submodules** for modular package manageme
 ## Top-Level Structure
 
 ```
-/Users/alyshialedlie/code/ISInternal/mcp-oauth-gateway/
+/Users/alyshialedlie/code/is-internal/mcp-oauth-gateway/
 ├── .github/              # GitHub Actions workflows
 ├── auth/                 # OAuth authorization service (main auth component)
 ├── coverage-spy/         # Code coverage monitoring utility
 ├── docs/                 # Jupyter Book documentation
-├── scripts/              # Utility and automation scripts (169 files)
-├── tests/                # Comprehensive test suite (93 test files)
+├── scripts/              # Utility and automation scripts (158 files)
+├── tests/                # Comprehensive test suite (87 test files)
 ├── traefik/              # Reverse proxy configuration
 │
 ├── mcp-oauth-dynamicclient/          # [SUBMODULE] OAuth 2.0 server (RFC 7591/7592)
@@ -72,8 +72,8 @@ This is a **monorepo** that uses **Git submodules** for modular package manageme
 | `auth/` | OAuth 2.1 authorization server | Service |
 | `traefik/` | Reverse proxy, routing, TLS termination | Infrastructure |
 | `docs/` | Jupyter Book documentation | Documentation |
-| `tests/` | Comprehensive test suite (93 files) | Testing |
-| `scripts/` | Automation utilities (169 files) | Utilities |
+| `tests/` | Comprehensive test suite (87 files) | Testing |
+| `scripts/` | Automation utilities (158 files) | Utilities |
 | `coverage-spy/` | Code coverage monitoring | Testing |
 
 ### 2. Git Submodules (External Repositories)
@@ -144,7 +144,7 @@ Jupyter Book documentation with:
 
 ### `/tests/` - Test Suite
 
-93 comprehensive test files covering:
+87 comprehensive test files covering:
 - OAuth flows (authorization code, device flow, PKCE)
 - MCP protocol compliance
 - Service integration tests
@@ -155,7 +155,7 @@ Jupyter Book documentation with:
 
 ### `/scripts/` - Automation Scripts
 
-169 utility scripts for:
+158 utility scripts for:
 - Service management
 - OAuth token generation
 - Testing utilities
@@ -272,8 +272,8 @@ This project uses **pixi** (not pip/poetry/uv):
 
 - **Total MCP services:** 19 directories
 - **Git submodules:** 6 packages
-- **Test files:** 93
-- **Utility scripts:** 169
+- **Test files:** 87
+- **Utility scripts:** 158
 - **Main justfile:** 44KB (comprehensive automation)
 - **Documentation:** Jupyter Book with multiple sections
 
@@ -296,5 +296,5 @@ For complete command reference, see `justfile` or run `just --list`.
 
 ---
 
-**Last Updated:** 2025-11-17  
+**Last Updated:** 2026-03-28
 **Repository:** https://github.com/atrawog/mcp-oauth-gateway
