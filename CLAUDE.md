@@ -146,7 +146,7 @@ Configuration is environment-based. Copy `example.env` to `.env` and customize:
 ### Critical Variables
 - `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` - GitHub OAuth app credentials
 - `REDIS_HOST` / `REDIS_PORT` - State storage backend
-- `JWT_SECRET_KEY` - Secret for signing JWT tokens (generate with `openssl rand -hex 32`)
+- `GATEWAY_JWT_SECRET` - Secret for signing JWT tokens (generate with `just generate-jwt-secret`)
 - `AUTH_SERVICE_PORT` - Auth service port (default: 3100)
 - `ALLOWED_ORIGINS` - CORS origins for web clients
 

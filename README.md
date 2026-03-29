@@ -371,7 +371,7 @@ You'll need to create a GitHub OAuth App that serves **two distinct purposes**:
 
 ## 📁 Repository Structure
 
-This repository uses Git submodules for better modularity. All Python packages are maintained as submodules:
+This repository uses Git submodules for better modularity. Published Python packages are maintained as submodules; shared local libraries live directly in the repo:
 
 ### Submodule Packages
 
@@ -404,6 +404,13 @@ This repository uses Git submodules for better modularity. All Python packages a
   - Repository: https://github.com/atrawog/mcp-echo-streamablehttp-server-stateless
   - PyPI: `mcp-echo-streamablehttp-server-stateless`
   - Purpose: Diagnostic MCP server without state management
+
+### Local Packages
+
+- **mcp-echo-base/** - Shared abstract base class for echo servers (Template Method pattern)
+  - Not a submodule — lives directly in this repo
+  - Eliminates ~400 lines of duplication between stateful/stateless echo servers
+  - Provides `MCPEchoServerBase` with concrete HTTP/SSE handling; subclasses implement 6 abstract methods
 
 ### Main Repository Components
 
