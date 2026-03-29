@@ -6,12 +6,12 @@ This module provides the MCPEchoServerBase abstract class that contains
 common functionality shared between stateful and stateless MCP echo servers.
 """
 
-import asyncio
 import json
 import logging
 import sys
 import time
 from abc import ABC, abstractmethod
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +22,9 @@ from starlette.responses import JSONResponse, Response, StreamingResponse
 from starlette.routing import Route
 
 logger = logging.getLogger(__name__)
+
+_request_context_var: ContextVar[dict | None] = ContextVar("request_context", default=None)
+_request_timing_var: ContextVar[dict | None] = ContextVar("request_timing", default=None)
 
 
 class MCPEchoServerBase(ABC):
@@ -49,7 +52,6 @@ class MCPEchoServerBase(ABC):
         """
         self.debug = debug
         self.supported_versions = supported_versions or self.get_supported_versions()
-        self._request_context: dict[int, dict[str, Any]] = {}
 
         # Setup logging
         log_level = logging.DEBUG if debug else logging.INFO
@@ -108,21 +110,16 @@ class MCPEchoServerBase(ABC):
         if validation_error:
             return validation_error
 
-        # Store request context
-        task_id = id(asyncio.current_task())
-        self._request_context[task_id] = {
+        # Store request context — ContextVar is scoped per async call-chain,
+        # so no manual cleanup or id() key needed.
+        _request_context_var.set({
             "headers": dict(request.headers),
             "start_time": time.time(),
             "method": request.method,
             "url": str(request.url),
-        }
+        })
 
-        try:
-            # Parse and process request
-            return await self._process_json_rpc_request(request)
-        finally:
-            # Clean up request context
-            self._request_context.pop(task_id, None)
+        return await self._process_json_rpc_request(request)
 
     def _validate_post_headers(self, request: Request) -> JSONResponse | None:
         """Validate required headers for POST requests."""
@@ -304,14 +301,11 @@ class MCPEchoServerBase(ABC):
             request_data = self._get_base_request_data(request, traefik_headers, start_time)
 
             # Store timing info for response logging
-            task_id = id(asyncio.current_task())
-            if not hasattr(self, "_request_timing"):
-                self._request_timing = {}
-            self._request_timing[task_id] = {
+            _request_timing_var.set({
                 "start_time": start_time,
                 "request_data": request_data,
                 "traefik_headers": traefik_headers,
-            }
+            })
 
             # Log request using subclass-specific format
             self._log_request(request, traefik_headers)
