@@ -80,6 +80,7 @@ Recent refactoring (documented in `docs/MCP_ECHO_SERVER_REFACTORING_PLAN.md`) el
    - 100% identical methods: request handling, header validation, error responses, SSE streaming
    - Template methods: allow customization via abstract methods
    - Concrete implementations: 6 shared methods (~200 lines)
+   - Uses `ContextVar` for per-request isolation (not `asyncio.current_task()` id dicts)
 
 2. **Subclass Pattern**:
    - Stateless: Inherits base, implements 6 abstract methods
@@ -95,6 +96,13 @@ Recent refactoring (documented in `docs/MCP_ECHO_SERVER_REFACTORING_PLAN.md`) el
    - `_log_request()` - Logging with subclass format
 
 **Key Insight**: When adding new echo server variants, inherit from `MCPEchoServerBase` to avoid duplicating 200+ lines of HTTP/SSE handling code.
+
+### Script Stack
+
+Scripts in `scripts/` use **Starlette/uvicorn** consistently (not aiohttp):
+- `scripts/callback_receiver.py` - OAuth callback server using Starlette `Route` + uvicorn
+- `scripts/check_services_ready.py` - Uses Rich console markup (not ANSI escape codes)
+- `utils.py` - `save_env_var` delegates to `python-dotenv` `set_key`
 
 ### Token Types
 
